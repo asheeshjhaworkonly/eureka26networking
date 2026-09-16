@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Show, SignInButton } from "@clerk/nextjs";
+import { useAuth } from "@clerk/nextjs";
 import {
   ArrowDown,
   ArrowUpRight,
@@ -12,6 +12,8 @@ import {
   Check,
 } from "lucide-react";
 export default function Landing() {
+  const { isLoaded, isSignedIn } = useAuth();
+  const showDirectoryLink = isLoaded && isSignedIn;
   return (
     <main className="container landing">
       <div className="eyebrow">
@@ -30,21 +32,23 @@ export default function Landing() {
             You made it to the zonals. Now meet the people building alongside
             you. One shared directory. Three cities. A whole lot of possibility.
           </p>
-          <Show when="signed-out">
-            <SignInButton mode="modal" forceRedirectUrl="/directory">
-              <button className="button yellow">
-                Find your people <ArrowUpRight size={22} />
-              </button>
-            </SignInButton>
-            <p className="fine">
-              Sign in with Google to explore and create your profile.
-            </p>
-          </Show>
-          <Show when="signed-in">
+          {showDirectoryLink ? (
             <Link className="button yellow" href="/directory">
               Find your people <ArrowUpRight size={22} />
             </Link>
-          </Show>
+          ) : (
+            <>
+              <Link
+                className="button yellow"
+                href="/sign-in?redirect_url=/directory"
+              >
+                Find your people <ArrowUpRight size={22} />
+              </Link>
+              <p className="fine">
+                Sign in with Google to explore and create your profile.
+              </p>
+            </>
+          )}
         </div>
         <div
           className="network-art"

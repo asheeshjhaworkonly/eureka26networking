@@ -1,14 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  UserButton,
-  Show,
-  SignInButton,
-  SignUpButton,
-  ClerkLoading,
-  ClerkLoaded,
-} from "@clerk/nextjs";
+import { UserButton, useAuth } from "@clerk/nextjs";
 import { ArrowUpRight, Sparkles } from "lucide-react";
 export function Brand() {
   return (
@@ -25,22 +18,16 @@ export function Brand() {
 }
 export function Shell({ children }: { children: React.ReactNode }) {
   const path = usePathname();
+  const { isLoaded, isSignedIn } = useAuth();
+  const showSignedIn = isLoaded && isSignedIn;
   return (
     <>
       <header className="header">
         <div className="header-inner">
           <Brand />
           <nav aria-label="Main navigation">
-            <ClerkLoading>
-              <Link className="nav-link" href="/sign-in">
-                Sign in
-              </Link>
-              <Link className="button yellow small" href="/sign-up">
-                Join the network <ArrowUpRight size={16} />
-              </Link>
-            </ClerkLoading>
-            <ClerkLoaded>
-              <Show when="signed-in">
+            {showSignedIn ? (
+              <>
                 <Link
                   className={
                     path === "/directory" ? "nav-link current" : "nav-link"
@@ -58,18 +45,17 @@ export function Shell({ children }: { children: React.ReactNode }) {
                   My profile <ArrowUpRight size={15} />
                 </Link>
                 <UserButton />
-              </Show>
-              <Show when="signed-out">
-                <SignInButton mode="modal">
-                  <button className="nav-link">Sign in</button>
-                </SignInButton>
-                <SignUpButton mode="modal">
-                  <button className="button yellow small">
-                    Join the network <ArrowUpRight size={16} />
-                  </button>
-                </SignUpButton>
-              </Show>
-            </ClerkLoaded>
+              </>
+            ) : (
+              <>
+                <Link className="nav-link" href="/sign-in">
+                  Sign in
+                </Link>
+                <Link className="button yellow small" href="/sign-up">
+                  Join the network <ArrowUpRight size={16} />
+                </Link>
+              </>
+            )}
           </nav>
         </div>
       </header>
