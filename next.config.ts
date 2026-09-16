@@ -4,6 +4,16 @@ const config: NextConfig = {
   outputFileTracingIncludes: {
     "/api/profiles/*/card": ["./assets/fonts/*.woff"],
   },
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "eureka26networking.vercel.app" }],
+        destination: "https://eureka26network.vercel.app/:path*",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {
