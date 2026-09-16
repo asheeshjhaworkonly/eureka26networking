@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { AuthScreen } from "@/components/auth-screen";
 import { safeAuthRedirect } from "@/lib/auth-redirect";
+import { requestOrigin } from "@/lib/request-origin";
 
 type AuthPageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
@@ -22,6 +23,7 @@ export default async function SignInPage({ searchParams }: AuthPageProps) {
         firstParam(params?.redirect_url) ??
           firstParam(params?.redirect_url_complete),
         "/directory",
+        await requestOrigin(),
       ),
     );
   }

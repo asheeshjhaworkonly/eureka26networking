@@ -12,7 +12,7 @@ import {
   wordCount,
   type Profile,
 } from "../src/lib/core";
-import { safeAuthRedirect } from "../src/lib/auth-redirect";
+import { safeAuthRedirect, signInDestination } from "../src/lib/auth-redirect";
 const base = {
   ...emptyProfile,
   eurekaId: "EU26-101",
@@ -96,6 +96,49 @@ test("auth redirects keep same-origin destinations and reject external hosts", (
     "/directory",
   );
 });
+test("auth redirects accept only the origin the request arrived on", () => {
+  // The app is served from more than one hostname, so the destination is
+  // validated against the live origin instead of a compiled-in domain.
+  assert.equal(
+    safeAuthRedirect(
+      "https://eureka26network.vercel.app/directory",
+      "/directory",
+      "https://eureka26networking.vercel.app",
+    ),
+    "/directory",
+  );
+  assert.equal(
+    safeAuthRedirect(
+      "https://eureka26networking.vercel.app/profile/edit",
+      "/directory",
+      "https://eureka26networking.vercel.app",
+    ),
+    "/profile/edit",
+  );
+  assert.equal(
+    safeAuthRedirect("https://eureka26network.vercel.app/p/1", "/directory"),
+    "/directory",
+  );
+  assert.equal(safeAuthRedirect("/p/1", "/directory"), "/p/1");
+});
+
+test("sign-in destinations keep the target and never point at themselves", () => {
+  assert.equal(
+    signInDestination("/p/abc?ref=card"),
+    "/sign-in?redirect_url=%2Fp%2Fabc%3Fref%3Dcard",
+  );
+  assert.equal(
+    signInDestination("/directory"),
+    "/sign-in?redirect_url=%2Fdirectory",
+  );
+  assert.equal(signInDestination("/sign-in"), "/sign-in");
+  assert.equal(
+    signInDestination("/sign-in?redirect_url=%2Fdirectory"),
+    "/sign-in",
+  );
+  assert.equal(signInDestination("https://attacker.example/x"), "/sign-in");
+});
+
 test("search matches names, company, email, location, and social links; terms combine", () => {
   assert.equal(filterProfiles([a, b], "yash", {}).length, 2);
   assert.deepEqual(

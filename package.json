@@ -9,8 +9,10 @@
     "test": "tsx --test tests/*.test.ts",
     "test:integration": "node --env-file=.env --env-file=.env.local scripts/run-integration.mjs",
     "verify:release": "node --env-file=.env --env-file=.env.local scripts/check-release.mjs",
-    "lint": "eslint src tests scripts *.ts *.mjs",
-    "setup:database": "node --env-file=.env.test scripts/setup-database.mjs"
+    "lint": "eslint src tests scripts *.ts *.mjs && echo LINT CLEAN",
+    "setup:database": "node --env-file=.env.test scripts/setup-database.mjs",
+    "verify:auth": "node --env-file=.env --env-file=.env.local scripts/check-auth-path.mjs",
+    "verify:auth:live": "node scripts/check-auth-path.mjs"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.9.4",
