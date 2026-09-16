@@ -9,6 +9,7 @@ import {
 } from "@clerk/nextjs";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
+import { CANONICAL_ORIGIN, safeAuthRedirect } from "@/lib/auth-redirect";
 
 type AuthScreenProps = {
   mode: "sign-in" | "sign-up";
@@ -20,10 +21,11 @@ export function AuthScreen({ mode }: AuthScreenProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const fallbackUrl = isSignIn ? "/directory" : "/profile/edit";
-  const redirectUrl = safeRedirectPath(
+  const redirectUrl = safeAuthRedirect(
     searchParams.get("redirect_url") ||
       searchParams.get("redirect_url_complete"),
     fallbackUrl,
+    currentOrigin(),
   );
   const title = isSignIn ? "Loading Google sign in" : "Loading network join";
   const text = isSignIn
@@ -72,17 +74,8 @@ export function AuthScreen({ mode }: AuthScreenProps) {
   );
 }
 
-function safeRedirectPath(value: string | null, fallbackUrl: string) {
-  if (!value) return fallbackUrl;
-  try {
-    const origin =
-      typeof window === "undefined"
-        ? "https://eureka26network.vercel.app"
-        : window.location.origin;
-    const url = new URL(value, origin);
-    if (url.origin !== origin) return fallbackUrl;
-    return `${url.pathname}${url.search}${url.hash}` || fallbackUrl;
-  } catch {
-    return fallbackUrl;
-  }
+function currentOrigin() {
+  return typeof window === "undefined"
+    ? CANONICAL_ORIGIN
+    : window.location.origin;
 }

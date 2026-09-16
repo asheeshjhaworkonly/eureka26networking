@@ -12,6 +12,7 @@ import {
   wordCount,
   type Profile,
 } from "../src/lib/core";
+import { safeAuthRedirect } from "../src/lib/auth-redirect";
 const base = {
   ...emptyProfile,
   eurekaId: "EU26-101",
@@ -65,6 +66,34 @@ test("valid profile accepted; consent, unsafe URLs, bad email, phone and 51 word
       description: Array(50).fill("word").join(" "),
     }).success,
     true,
+  );
+});
+
+test("auth redirects keep same-origin destinations and reject external hosts", () => {
+  const origin = "https://eureka26network.vercel.app";
+  assert.equal(
+    safeAuthRedirect(
+      "https://eureka26network.vercel.app/profile/edit?step=1",
+      "/directory",
+      origin,
+    ),
+    "/profile/edit?step=1",
+  );
+  assert.equal(
+    safeAuthRedirect("/download#pledge", "/directory", origin),
+    "/download#pledge",
+  );
+  assert.equal(
+    safeAuthRedirect(
+      "https://attacker.example/profile/edit",
+      "/directory",
+      origin,
+    ),
+    "/directory",
+  );
+  assert.equal(
+    safeAuthRedirect("//attacker.example", "/directory", origin),
+    "/directory",
   );
 });
 test("search matches names, company, email, location, and social links; terms combine", () => {
