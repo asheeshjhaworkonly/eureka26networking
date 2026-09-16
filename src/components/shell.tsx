@@ -1,7 +1,14 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { UserButton, Show, SignInButton, SignUpButton } from "@clerk/nextjs";
+import {
+  UserButton,
+  Show,
+  SignInButton,
+  SignUpButton,
+  ClerkLoading,
+  ClerkLoaded,
+} from "@clerk/nextjs";
 import { ArrowUpRight, Sparkles } from "lucide-react";
 export function Brand() {
   return (
@@ -24,35 +31,45 @@ export function Shell({ children }: { children: React.ReactNode }) {
         <div className="header-inner">
           <Brand />
           <nav aria-label="Main navigation">
-            <Show when="signed-in">
-              <Link
-                className={
-                  path === "/directory" ? "nav-link current" : "nav-link"
-                }
-                href="/directory"
-              >
-                The directory
+            <ClerkLoading>
+              <Link className="nav-link" href="/sign-in">
+                Sign in
               </Link>
-              <Link
-                className={
-                  path === "/profile/edit" ? "nav-link current" : "nav-link"
-                }
-                href="/profile/edit"
-              >
-                My profile <ArrowUpRight size={15} />
+              <Link className="button yellow small" href="/sign-up">
+                Join the network <ArrowUpRight size={16} />
               </Link>
-              <UserButton />
-            </Show>
-            <Show when="signed-out">
-              <SignInButton mode="modal">
-                <button className="nav-link">Sign in</button>
-              </SignInButton>
-              <SignUpButton mode="modal">
-                <button className="button yellow small">
-                  Join the network <ArrowUpRight size={16} />
-                </button>
-              </SignUpButton>
-            </Show>
+            </ClerkLoading>
+            <ClerkLoaded>
+              <Show when="signed-in">
+                <Link
+                  className={
+                    path === "/directory" ? "nav-link current" : "nav-link"
+                  }
+                  href="/directory"
+                >
+                  The directory
+                </Link>
+                <Link
+                  className={
+                    path === "/profile/edit" ? "nav-link current" : "nav-link"
+                  }
+                  href="/profile/edit"
+                >
+                  My profile <ArrowUpRight size={15} />
+                </Link>
+                <UserButton />
+              </Show>
+              <Show when="signed-out">
+                <SignInButton mode="modal">
+                  <button className="nav-link">Sign in</button>
+                </SignInButton>
+                <SignUpButton mode="modal">
+                  <button className="button yellow small">
+                    Join the network <ArrowUpRight size={16} />
+                  </button>
+                </SignUpButton>
+              </Show>
+            </ClerkLoaded>
           </nav>
         </div>
       </header>
