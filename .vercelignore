@@ -1,0 +1,9 @@
+.env
+.env.*
+!.env.example
+.qa-*
+.qa-*.*
+test-results/
+playwright-report/
+clerk-config.json
+clerk-schema.json
