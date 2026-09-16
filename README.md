@@ -82,7 +82,7 @@ See `GATES.md` and `QA-EVIDENCE.md` for the current verification status and acce
 2. Framework: Next.js. Use the default install and build settings. Set the required application environment variables above, plus Clerk route values from `.env.example`. Keep `DOWNLOAD_PAYMENT_GATE_ENABLED=false` while downloads are open.
 3. Use the correct Clerk instance keys for the environment. Production must use `pk_live_` and `sk_live_` values.
 4. For `eureka26network.vercel.app`, do not add DNS records for `vercel.app`. Vercel owns that domain. Clerk verifies the app-origin proxy URL `https://eureka26network.vercel.app/__clerk`, and the app routes that path through `clerkMiddleware`.
-5. Deploy, then repeat the actual user journey on the chosen URL. Profile QR codes use the current site's origin; download new QR images after moving to a different domain.
+5. Deploy, then repeat the actual user journey on the chosen URL. `.vercelignore` excludes local `.env` files so CLI deploys use Vercel Project Settings values instead of uploading local secrets. Profile QR codes use the current site's origin; download new QR images after moving to a different domain.
 
 Custom domains are still preferred before a public launch. They give the cleanest branded production behavior for Account Portal, custom email templates, email-link authentication, app invitations, organization invitations, and email customization.
 
