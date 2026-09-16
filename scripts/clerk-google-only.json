@@ -1,0 +1,7 @@
+{
+  "auth_email": { "used_for_sign_in": false, "used_for_sign_up": false, "required_for_sign_up": false, "verify_at_sign_up": false },
+  "auth_phone": { "used_for_sign_in": false, "used_for_sign_up": false, "required_for_sign_up": false, "verify_at_sign_up": false, "used_for_second_factor": false },
+  "auth_password": { "enabled": false, "required": false, "device_trust": { "enabled": false } },
+  "connection_oauth_github": { "enabled": false },
+  "connection_oauth_google": { "enabled": true, "authenticatable": true }
+}

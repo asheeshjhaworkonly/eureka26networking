@@ -1,0 +1,16 @@
+node_modules/
+.next/
+.env*
+!.env.example
+.vercel/
+.unlazy/
+supabase/.temp/
+test-results/
+playwright-report/
+*.tsbuildinfo
+clerk-config.json
+clerk-schema.json
+.qa-auth.json
+.qa-*
+clerk-provider-patch.json
+clerk-*-patch.json

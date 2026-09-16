@@ -1,0 +1,39 @@
+{
+  "name": "eureka26networking",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --hostname 0.0.0.0",
+    "build": "next build",
+    "start": "next start --hostname 0.0.0.0",
+    "test": "tsx --test tests/core.test.ts",
+    "test:integration": "node --env-file=.env --env-file=.env.local --import tsx tests/integration.mts",
+    "verify:release": "node --env-file=.env --env-file=.env.local scripts/check-release.mjs",
+    "lint": "eslint src tests scripts *.ts *.mjs",
+    "setup:database": "node --env-file=.env.test scripts/setup-database.mjs"
+  },
+  "dependencies": {
+    "@clerk/nextjs": "^7.9.4",
+    "@supabase/supabase-js": "latest",
+    "lucide-react": "latest",
+    "next": "latest",
+    "qrcode": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "server-only": "^0.0.1",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "@types/qrcode": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "eslint": "latest",
+    "eslint-config-next": "latest",
+    "postgres": "latest",
+    "prettier": "^3.9.7",
+    "supabase": "^2.117.0",
+    "tsx": "latest",
+    "typescript": "latest"
+  }
+}
