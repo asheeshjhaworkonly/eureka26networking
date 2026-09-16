@@ -22,8 +22,8 @@ Scope: Build and verify the authenticated participant directory, editable profil
 - [x] G4: Browser checks cover responsive directory, form, profile, export, and signed-out protection
   EVIDENCE: CUA browser verified signed-in directory, all four form steps, required consent, persisted detail and QR, search plus combined filters, keyboard modal dismissal, removal confirmation cancellation, and free CSV success. Responsive checks at 360/390/768 and desktop; QR decoration overflow fixed and rechecked. Signed-out APIs/pages verified by check-access. Disposable profile and Clerk account removed. See QA-EVIDENCE.md.
 
-- [ ] G5: GitHub contains the verified app with environment files excluded; Vercel setup is documented
-  EVIDENCE: pending
+- [x] G5: GitHub contains the verified app with environment files excluded; Vercel setup is documented
+  EVIDENCE: App commit 06d363a pushed successfully to the requested private repository on main; remote main matched local HEAD. Release secret scan checked tracked files and excluded local environment files. README documents the owner's first Vercel deployment, free testing mode, final-domain Clerk production setup, and deferred Razorpay integration.
 
 - [x] G6: Production browser bundles exclude server secrets and environment files are not tracked
   CHECK: npm run verify:release
