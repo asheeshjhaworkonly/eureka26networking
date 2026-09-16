@@ -17,6 +17,24 @@
   align-items: center;
   justify-content: center;
 }
+.auth-loading {
+  width: min(100%, 420px);
+  background: #fffdf7;
+  border: var(--line);
+  box-shadow: var(--shadow);
+  padding: 34px;
+}
+.auth-loading h1 {
+  font-size: 29px;
+  line-height: 1.1;
+  letter-spacing: -1px;
+  margin: 17px 0 10px;
+}
+.auth-loading p {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.7;
+}
 * {
   box-sizing: border-box;
 }
