@@ -4,7 +4,7 @@ An unofficial, anonymous participant network for Eureka 2026 zonals. Next.js, Cl
 
 ## Included
 
-- Clerk authentication, with Google available through the linked Clerk app. The production `vercel.app` domain uses Clerk's app-origin proxy at `/__clerk`.
+- Clerk authentication with Google. Protected routes send signed-out visitors to this app's own `/sign-in`, carrying the destination, so a printed QR card link still lands correctly after login.
 - Participant-owned create/edit/delete profiles and optional private photo uploads (JPG, PNG, WebP; 3 MB maximum, keeping requests within [Vercel's function payload limit](https://vercel.com/docs/functions/limitations)).
 - All requested company, personal, qualification, centre, experience and social fields. Fifty-word company description limit enforced on the server.
 - Stable UUID profile URLs, printable 4:5 participant QR cards (1200×1500 PNG, 300 DPI), profile sharing, LinkedIn connections, and downloadable vCard contact files. Cards show the holder's name, company, role, Eureka ID and zonal centre. Mobile devices can import a vCard into Contacts; browser behavior varies.
@@ -80,11 +80,26 @@ See `GATES.md` and `QA-EVIDENCE.md` for the current verification status and acce
 
 1. Import `asheeshjhaworkonly/eureka26networking` into Vercel and select your preferred `*.vercel.app` project name. `main` and `master` are kept in sync; use whichever branch your Vercel project is already tracking.
 2. Framework: Next.js. Use the default install and build settings. Set the required application environment variables above, plus Clerk route values from `.env.example`. Keep `DOWNLOAD_PAYMENT_GATE_ENABLED=false` while downloads are open.
-3. Use the correct Clerk instance keys for the environment. Production must use `pk_live_` and `sk_live_` values.
-4. For `eureka26network.vercel.app`, do not add DNS records for `vercel.app`. Vercel owns that domain. Clerk verifies the app-origin proxy URL `https://eureka26network.vercel.app/__clerk`, and the app routes that path through `clerkMiddleware`.
-5. Deploy, then repeat the actual user journey on the chosen URL. `.vercelignore` excludes local `.env` files so CLI deploys use Vercel Project Settings values instead of uploading local secrets. Profile QR codes use the current site's origin; download new QR images after moving to a different domain.
+3. On a `*.vercel.app` address, use the Clerk **development** instance keys (`pk_test_`, `sk_test_`). See "Clerk instance and domain" below before reaching for production keys.
+4. Deploy, then repeat the actual user journey on the chosen URL. `.vercelignore` excludes local `.env` files so CLI deploys use Vercel Project Settings values instead of uploading local secrets. Profile QR codes use the current site's origin; download new QR images after moving to a different domain.
 
-Custom domains are still preferred before a public launch. They give the cleanest branded production behavior for Account Portal, custom email templates, email-link authentication, app invitations, organization invitations, and email customization.
+### Clerk instance and domain
+
+A Clerk **production** instance is bound to `clerk.<your-domain>` and `accounts.<your-domain>`. It serves its frontend API from the first and its account portal from the second, and the app's server obtains a session by a handshake against the frontend API host.
+
+Neither host can exist under `*.vercel.app`. `vercel.app` is on the Public Suffix List and Vercel owns it, so `clerk.<name>.vercel.app` cannot be claimed. Both names still resolve through Vercel's wildcard DNS but serve nothing, which fails in a way that looks like an app bug rather than a configuration one:
+
+- The server handshake never completes, so the browser shows a signed-in header while every protected route answers as signed out. Clerk reports `client-uat-but-no-session-token`.
+- `auth.protect()` cannot reach a working sign-in page, so Clerk rewrites the request to a 404. Every protected address, including the `/p/` links printed on QR cards, returns "not found".
+- Sign-in bounces back to itself, leaving the visitor on a loading screen that never resolves.
+
+Routing the frontend API through the app-origin proxy at `/__clerk` fixes only the browser's leg. It does not give the server a reachable handshake host and does not revive the account portal.
+
+So: on a `*.vercel.app` address, run the development instance. It serves its frontend API from `<slug>.clerk.accounts.dev` and its portal from `<slug>.accounts.dev`, both real hosts with valid certificates, and it accepts any origin. Google sign-in works through Clerk's shared credentials. The trade is a "Development mode" badge on the widget and Clerk's development limits.
+
+**To move to a production instance**, add a domain you control DNS for. Point that domain at the Vercel project, create the Clerk production instance on it, add the `clerk` and `accounts` DNS records Clerk asks for, configure Google OAuth with your own credentials, then set `pk_live_`/`sk_live_` in Vercel. No application code changes: the frontend API proxy switches on automatically for a `pk_live_` key. Regenerate participant QR cards afterwards, because they encode the origin they were made on.
+
+Verify either setup with `npm run verify:auth` against a local build, or `npm run verify:auth:live -- https://your-domain` against a deployment. It fails if a protected route dead-ends instead of offering sign-in.
 
 ## Later Razorpay phase
 
