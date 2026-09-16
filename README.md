@@ -78,7 +78,7 @@ See `GATES.md` and `QA-EVIDENCE.md` for the current verification status and acce
 
 ## Your first Vercel deployment
 
-1. Import `asheeshjhaworkonly/eureka26networking` into Vercel and select your preferred `*.vercel.app` project name. Choose `master` as the production branch for these changes.
+1. Import `asheeshjhaworkonly/eureka26networking` into Vercel and select your preferred `*.vercel.app` project name. Choose `main` as the production branch; it is the only branch in this repository.
 2. Framework: Next.js. Use the default install and build settings. Set the required application environment variables above, plus Clerk route values from `.env.example`. Keep `DOWNLOAD_PAYMENT_GATE_ENABLED=false` while downloads are open.
 3. Use the correct Clerk instance keys for the environment. The linked application currently has development keys; a production Clerk instance and its domain/OAuth configuration must be completed before a public launch.
 4. In Clerk, enable Google and configure the deployed origin and redirect URLs. For production, complete Clerk's production-domain and Google OAuth setup using the final domain you choose. No Vercel deployment is performed by this task.
