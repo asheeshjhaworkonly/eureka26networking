@@ -1,16 +1,17 @@
 # Verification evidence
 
-Verified on 16 September 2026 in the Windows project workspace, using Next.js 16.3.5 and the linked Clerk development application.
+Verified on 16 September 2026 in the Windows project workspace, using Next.js 16.3.5, the linked Clerk application, Supabase project `pmpekvgfhlixpivwfyfs`, and the Vercel project `eureka26networking`.
 
 ## Passed
 
 - Production build and TypeScript validation; ESLint without errors or warnings.
-- Seven behavioral tests: profile fields, 50/51-word boundary, required consent, safe links and URL credentials, search across fields and social links, combined filters, CSV quoting/formula safety and fixed snapshots, contact escaping, and matching/foreign request origins.
+- Nine behavioral tests: profile fields, 50/51-word boundary, required consent, safe links and URL credentials, search across fields and social links, combined filters, CSV quoting/formula safety and fixed snapshots, contact escaping, matching/foreign request origins, and printable 4:5 participant cards with decoded QR destinations and Unicode/markup coverage.
 - Signed-out checks: six data APIs return 401, four private pages redirect to sign-in, public landing returns 200 with security headers.
 - Supabase schema checks: profiles and purchases exist; the photo bucket is private; direct reads with the publishable key are denied for both tables.
-- Live integration: two disposable Clerk users; profile creation and updates persist; teammates may share a Eureka ID while keeping separate stable profile UUIDs; owner-only photo writes; foreign-origin saves denied; private PNG upload/read; vCard output; fresh CSV after updates with spreadsheet-formula escaping; profile and photo removal. Test fixtures were cleaned up.
-- Browser: signed-in directory, four-step profile creation, consent rejection before publishing, saved profile details and rendered QR, QR download action, broad search, combined sector/state filters, filter dialog Escape dismissal, removal dialog cancellation, free CSV download success and repeat-download state.
-- Responsive browser: landing and authenticated directory/form/profile/download at 390px; download at 360px; directory at 768px; desktop landing and signed-in flows. Measured layouts had no horizontal overflow after fixing the QR card's decorative mark. Mobile QR card remains a positioned container so its decoration stays clipped.
+- Live integration: two disposable Clerk users; profile creation and updates persist; teammates may share a Eureka ID while keeping separate stable profile UUIDs; owner-only photo writes; foreign-origin saves denied; private PNG upload/read; private printable card access; card attachment headers; decoded card QR origin; vCard output; fresh CSV after updates with spreadsheet-formula escaping; free download mode; gated unpaid, pending, paid and repeat-paid download behavior; profile and photo removal. Test fixtures were cleaned up.
+- Browser: signed-in directory, four-step profile creation, consent rejection before publishing, saved profile details, printable card preview, QR card download action, broad search, combined sector/state filters, filter dialog Escape dismissal, removal dialog cancellation, free CSV download success and repeat-download state.
+- Payment-toggle browser checks: gate off showed no fee, payment, paid, checkout or testing-mode wording on the download and privacy pages while preserving the separate download page and pledge; gate on restored the one-time access explanation and blocked unpaid downloads. Desktop and 390px mobile layouts had no horizontal overflow.
+- Clerk/Vercel production readiness: Vercel has encrypted live Clerk publishable and secret keys for Production and Preview, route variables point to `/sign-in` and `/sign-up`, `DOWNLOAD_PAYMENT_GATE_ENABLED=false` is present for Production and Preview, and `EXPORT_TEST_MODE` was removed. The Next.js proxy matcher includes `/__clerk/:path*`, and `clerkMiddleware` explicitly enables `frontendApiProxy`.
 - Correct private GitHub repository access verified. Release checks scan production browser bundles and tracked files for both server secrets, including a positive leak control; environment files are excluded from Git.
 
 ## Interface review
@@ -23,9 +24,9 @@ Private profile images deliberately use authenticated browser image requests bec
 
 ## Launch boundaries
 
-- User reported completing Google login. Independent signed-in browser checks used a disposable Clerk development test account; this account and its fictional profile were removed. Google-only login settings were restored and confirmed.
+- User reported completing Google login. Independent signed-in browser checks used a disposable Clerk development test account; this account and its fictional profile were removed. Google-only development login settings were restored and confirmed.
 - Physical QR scanning and contact import on the user's phone remain device acceptance checks. A localhost QR works only on a device able to reach that localhost; generate the launch QR on the deployed domain.
-- Clerk production instance/domain and Google OAuth configuration must be completed for the final chosen domain. Development-key testing is not production OAuth verification.
-- The repository owner performs the first Vercel deployment. Keep EXPORT_TEST_MODE=true for review. Razorpay is deferred until free functionality is approved; no payment is collected.
+- Clerk production status for `eureka26network.vercel.app` reports DNS and SSL complete and Google OAuth configured. Mail provisioning remains pending in Clerk status; for this `vercel.app` setup, sign-in, sign-up, verification code, and password-reset code emails can use Clerk's shared `accounts.dev` infrastructure. A custom domain is still preferred for fully branded production behavior, customized email templates, email-link authentication, app invitations, and organization invitations.
+- Razorpay is deferred until free functionality is approved; no payment is collected.
 
 See GATES.md for final acceptance evidence and README.md for deployment instructions.

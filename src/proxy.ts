@@ -6,9 +6,16 @@ const isProtected = createRouteMatcher([
   "/p/(.*)",
   "/download(.*)",
 ]);
-export default clerkMiddleware(async (auth, req) => {
-  if (isProtected(req)) await auth.protect();
-});
+export default clerkMiddleware(
+  async (auth, req) => {
+    if (isProtected(req)) await auth.protect();
+  },
+  {
+    frontendApiProxy: {
+      enabled: true,
+    },
+  },
+);
 
 export const config = {
   matcher: [

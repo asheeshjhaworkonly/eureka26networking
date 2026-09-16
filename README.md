@@ -1,10 +1,10 @@
 # eureka26networking
 
-An unofficial, anonymous participant network for Eureka 2026 zonals. Next.js, Clerk, Supabase, and plain CSS. The first deployment is intentionally left to the repository owner. Razorpay is intentionally deferred until the free testing phase is approved.
+An unofficial, anonymous participant network for Eureka 2026 zonals. Next.js, Clerk, Supabase, and plain CSS. Razorpay is intentionally deferred until the free testing phase is approved.
 
 ## Included
 
-- Clerk authentication, with Google available through the linked Clerk app.
+- Clerk authentication, with Google available through the linked Clerk app. The production `vercel.app` domain uses Clerk's app-origin proxy at `/__clerk`.
 - Participant-owned create/edit/delete profiles and optional private photo uploads (JPG, PNG, WebP; 3 MB maximum, keeping requests within [Vercel's function payload limit](https://vercel.com/docs/functions/limitations)).
 - All requested company, personal, qualification, centre, experience and social fields. Fifty-word company description limit enforced on the server.
 - Stable UUID profile URLs, printable 4:5 participant QR cards (1200×1500 PNG, 300 DPI), profile sharing, LinkedIn connections, and downloadable vCard contact files. Cards show the holder's name, company, role, Eureka ID and zonal centre. Mobile devices can import a vCard into Contacts; browser behavior varies.
@@ -76,13 +76,15 @@ npm run test:integration
 
 See `GATES.md` and `QA-EVIDENCE.md` for the current verification status and access limitations.
 
-## Your first Vercel deployment
+## Vercel deployment
 
-1. Import `asheeshjhaworkonly/eureka26networking` into Vercel and select your preferred `*.vercel.app` project name. Choose `main` as the production branch; it is the only branch in this repository.
+1. Import `asheeshjhaworkonly/eureka26networking` into Vercel and select your preferred `*.vercel.app` project name. `main` and `master` are kept in sync; use whichever branch your Vercel project is already tracking.
 2. Framework: Next.js. Use the default install and build settings. Set the required application environment variables above, plus Clerk route values from `.env.example`. Keep `DOWNLOAD_PAYMENT_GATE_ENABLED=false` while downloads are open.
-3. Use the correct Clerk instance keys for the environment. The linked application currently has development keys; a production Clerk instance and its domain/OAuth configuration must be completed before a public launch.
-4. In Clerk, enable Google and configure the deployed origin and redirect URLs. For production, complete Clerk's production-domain and Google OAuth setup using the final domain you choose. No Vercel deployment is performed by this task.
+3. Use the correct Clerk instance keys for the environment. Production must use `pk_live_` and `sk_live_` values.
+4. For `eureka26network.vercel.app`, do not add DNS records for `vercel.app`. Vercel owns that domain. Clerk verifies the app-origin proxy URL `https://eureka26network.vercel.app/__clerk`, and the app routes that path through `clerkMiddleware`.
 5. Deploy, then repeat the actual user journey on the chosen URL. Profile QR codes use the current site's origin; download new QR images after moving to a different domain.
+
+Custom domains are still preferred before a public launch. They give the cleanest branded production behavior for Account Portal, custom email templates, email-link authentication, app invitations, organization invitations, and email customization.
 
 ## Later Razorpay phase
 
