@@ -345,8 +345,7 @@ export default function Directory() {
         </div>
       )}
       <p className="directory-footnote">
-        Profiles are shared by participants. Eureka IDs and company details are
-        self-reported.
+        Profiles are shared by participants. Company details are self-reported.
       </p>
       {open && (
         <Dialog

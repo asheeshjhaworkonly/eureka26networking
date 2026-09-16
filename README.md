@@ -7,7 +7,7 @@ An unofficial, anonymous participant network for Eureka 2026 zonals. Next.js, Cl
 - Clerk authentication with Google. Protected routes send signed-out visitors to this app's own `/sign-in`, carrying the destination, so a printed QR card link still lands correctly after login.
 - Participant-owned create/edit/delete profiles and optional private photo uploads (JPG, PNG, WebP; 3 MB maximum, keeping requests within [Vercel's function payload limit](https://vercel.com/docs/functions/limitations)).
 - All requested company, personal, qualification, centre, experience and social fields. Fifty-word company description limit enforced on the server.
-- Stable UUID profile URLs, printable 4:5 participant QR cards (1200×1500 PNG, 300 DPI), profile sharing, LinkedIn connections, and downloadable vCard contact files. Cards show the holder's name, company, role, Eureka ID and zonal centre. Mobile devices can import a vCard into Contacts; browser behavior varies.
+- Stable UUID profile URLs, printable 4:5 participant QR cards (1200×1500 PNG, 300 DPI), profile sharing, LinkedIn connections, and downloadable vCard contact files. Cards show the holder's name, company, role and zonal centre. Mobile devices can import a vCard into Contacts; browser behavior varies.
 - Authenticated directory, actual participant counts, full-profile search, combined filters, sorting and refresh.
 - Separate download page in both modes. A server-controlled payment gate hides every fee/payment reference when off and restores the explanation and entitlement restriction when on. Fresh Excel-compatible CSV snapshots on each download, including formula-injection protection.
 - Consent, withdrawal, and community rules. Self-reported qualification; no official verification or endorsement.

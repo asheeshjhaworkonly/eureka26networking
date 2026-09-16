@@ -34,16 +34,7 @@ const STEPS = [
   "Links & publish",
 ];
 const STEP_FIELDS = [
-  [
-    "eurekaId",
-    "name",
-    "role",
-    "email",
-    "phone",
-    "linkedin",
-    "status",
-    "statusOther",
-  ],
+  ["name", "role", "email", "phone", "linkedin", "status", "statusOther"],
   [
     "company",
     "companyEmail",
@@ -410,11 +401,6 @@ export default function ProfileForm() {
                 {field("name", "Your full name", {
                   required: true,
                   placeholder: "What should we call you?",
-                })}
-                {field("eurekaId", "Eureka ID", {
-                  required: true,
-                  placeholder: "Your zonal application ID",
-                  hint: "Self-reported. Not verified by the organisers.",
                 })}
                 {field("role", "Your role in the company", {
                   required: true,

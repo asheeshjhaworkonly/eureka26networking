@@ -20,11 +20,11 @@ export default async function Privacy() {
       <h2>What you choose to share</h2>
       <p>
         Publishing a profile shares the information you enter, including your
-        Eureka ID, name, role, photo, emails, phone number, company details,
-        location, and links, with signed-in network members. These members can
-        view profiles, save contact cards, and download directory snapshots when
-        exports are available. Do not submit confidential material or details
-        belonging to someone else without permission.
+        name, role, photo, emails, phone number, company details, location, and
+        links, with signed-in network members. These members can view profiles,
+        save contact cards, and download directory snapshots when exports are
+        available. Do not submit confidential material or details belonging to
+        someone else without permission.
       </p>
       <h2>Login and storage</h2>
       <p>
@@ -62,8 +62,8 @@ export default async function Privacy() {
         Use shared details for relevant, respectful networking. Do not publish
         or resell the directory, forward it outside this community, scrape it,
         send unsolicited bulk messages, or impersonate a participant. Only
-        publish information you have permission to share. Eureka IDs and
-        business claims are self-reported.
+        publish information you have permission to share. Business claims are
+        self-reported.
       </p>
       <Link className="button yellow" href="/profile/edit">
         Manage my profile ↗

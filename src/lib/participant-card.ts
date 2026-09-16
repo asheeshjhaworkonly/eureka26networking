@@ -88,10 +88,8 @@ export function participantCardSvg(profile: Profile, origin: string) {
       <text x="92" y="254" font-family="monospace" font-size="22" letter-spacing="3">THE PARTICIPANT NETWORK</text>
       ${textBlock(profile.name, 324, 64, 3)}
       <path d="M92 486H1108" fill="none" stroke-width="3"/>
-      ${textBlock(profile.company, 536, 40, 2)}
-      ${textBlock(profile.role, 634, 28, 2, 400)}
-      <text x="92" y="697" font-family="monospace" font-size="18" letter-spacing="2">EUREKA ID · SELF-REPORTED</text>
-      ${textBlock(profile.eurekaId, 731, 24, 1, 700)}
+      ${textBlock(profile.company, 572, 40, 2)}
+      ${textBlock(profile.role, 676, 28, 2, 400)}
       <rect x="104" y="778" width="1004" height="578"/>
       <rect x="92" y="766" width="1004" height="578" fill="#c9e5d8" stroke-width="5"/>
       <rect x="338" y="788" width="524" height="524" fill="#ffffff" stroke-width="3"/>

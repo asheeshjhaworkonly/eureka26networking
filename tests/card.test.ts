@@ -11,7 +11,6 @@ const profile: Profile = {
   name: "Yash Sharma",
   company: "Ideas & People <Network>",
   role: "Founder",
-  eurekaId: "E26-0088",
   centre: "Mumbai",
   photo: false,
   createdAt: "2026-09-16T00:00:00Z",
@@ -22,7 +21,11 @@ test("printable 4:5 participant card includes holder details and a decodable pro
   const svg = participantCardSvg(profile, "https://network.example.com");
   assert.ok(svg.includes("Yash Sharma"));
   assert.ok(svg.includes("Ideas &amp; People &lt;Network&gt;"));
-  assert.ok(svg.includes("E26-0088"));
+  assert.ok(svg.includes("Mumbai"), "Card names the zonal centre");
+  assert.ok(
+    !svg.includes("EUREKA ID"),
+    "Participants are no longer asked for a Eureka ID",
+  );
   assert.ok(
     !svg.includes("<text"),
     "Card lettering is outlined using bundled fonts, independent of host fonts",
@@ -49,7 +52,6 @@ test("card escapes profile markup and accommodates long Unicode holder details",
     name: "आ".repeat(100),
     company: '<script>alert("test")</script>' + "W".repeat(100),
     role: "Chief Collaborator ".repeat(5),
-    eurekaId: "W".repeat(80),
     centre: "Bengaluru" as const,
   };
   const svg = participantCardSvg(long, "https://network.example.com");

@@ -15,17 +15,19 @@ const sql = postgres(connection, {
   max: 1,
   connect_timeout: 15,
 });
+const migrations = [
+  "202609160001_directory.sql",
+  "202609170001_drop_eureka_id.sql",
+];
 try {
-  await sql.unsafe(
-    await readFile(
-      new URL(
-        "../supabase/migrations/202609160001_directory.sql",
-        import.meta.url,
+  for (const migration of migrations)
+    await sql.unsafe(
+      await readFile(
+        new URL(`../supabase/migrations/${migration}`, import.meta.url),
+        "utf8",
       ),
-      "utf8",
-    ),
-  );
-  console.log("Database migration applied.");
+    );
+  console.log(`Database migrations applied: ${migrations.length}.`);
 } catch (e) {
   console.error("Database setup failed:", e.code || e.name);
   process.exitCode = 1;

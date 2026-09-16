@@ -86,7 +86,6 @@ export const wordCount = (s: string) =>
   s.trim() ? s.trim().split(/\s+/u).length : 0;
 export const profileSchema = z
   .object({
-    eurekaId: text(80).min(1, "Enter your Eureka ID"),
     name: text(100).min(2, "Enter your full name"),
     role: text(100).min(1, "Enter your role"),
     email: z.email().max(254),
@@ -148,7 +147,6 @@ export type Profile = ProfileInput & {
   updatedAt: string;
 };
 export const emptyProfile: ProfileInput = {
-  eurekaId: "",
   name: "",
   role: "Founder",
   email: "",
@@ -221,7 +219,6 @@ export function filterValue(p: Profile, key: keyof Filters) {
 }
 export const CSV_FIELDS = [
   "id",
-  "eurekaId",
   "name",
   "role",
   "email",

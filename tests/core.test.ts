@@ -15,7 +15,6 @@ import {
 import { safeAuthRedirect, signInDestination } from "../src/lib/auth-redirect";
 const base = {
   ...emptyProfile,
-  eurekaId: "EU26-101",
   name: "Yash Sharma",
   email: "yash@example.com",
   phone: "+91 98765 43210",
@@ -35,7 +34,6 @@ const a: Profile = {
 const b: Profile = {
   ...a,
   id: "00000000-0000-0000-0000-000000000002",
-  eurekaId: "EU26-102",
   name: "Aditi Mehta",
   company: "Yash Mobility",
   centre: "Delhi",

@@ -143,7 +143,6 @@ export default function ProfilePage({ id }: { id: string }) {
                 ["Incorporated", profile.incorporated],
                 ["Funded", profile.funded],
                 ["Zonal centre", profile.centre],
-                ["Eureka ID", profile.eurekaId],
               ].map(([label, value]) => (
                 <div key={label}>
                   <small>{label}</small>
@@ -235,7 +234,7 @@ export default function ProfilePage({ id }: { id: string }) {
             {!cardError ? (
               <img
                 src={`/api/profiles/${id}/card`}
-                alt={`Printable Eureka 26 participant card for ${profile.name}, with company, role, Eureka ID and profile QR`}
+                alt={`Printable Eureka 26 participant card for ${profile.name}, with company, role, zonal centre and profile QR`}
                 width={1200}
                 height={1500}
                 onLoad={() => setCardReady(true)}

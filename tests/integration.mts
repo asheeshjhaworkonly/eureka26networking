@@ -58,7 +58,6 @@ async function json(session: string, path: string, options: RequestInit = {}) {
 }
 const base = {
   ...emptyProfile,
-  eurekaId: `QA-${Date.now()}`,
   name: "Yash Test Participant",
   email: "qa@example.com",
   phone: "+91 90000 00000",
@@ -116,7 +115,11 @@ try {
       company: "Disposable Team QA",
     }),
   );
-  assert.equal(teammate.status, 200, "Teammates can share a Eureka ID");
+  assert.equal(
+    teammate.status,
+    200,
+    "Teammates from one company each get their own profile",
+  );
   assert.notEqual(teammate.body.id, id);
   const listed = await json(first, "/api/profiles");
   assert.equal(listed.status, 200);
@@ -188,8 +191,16 @@ try {
   );
   const status = await json(first, "/api/export/status");
   assert.deepEqual(status.body, { paymentGateEnabled: false, unlocked: true });
-  assert.ok(!(await (await request(first, "/privacy")).text()).includes("₹9"), "Free-mode privacy page must hide the fee");
-  assert.ok((await (await request(first, "/privacy", {}, gateOrigin)).text()).includes("₹9"), "Gated privacy page must restore the explanation");
+  assert.ok(
+    !(await (await request(first, "/privacy")).text()).includes("₹9"),
+    "Free-mode privacy page must hide the fee",
+  );
+  assert.ok(
+    (await (await request(first, "/privacy", {}, gateOrigin)).text()).includes(
+      "₹9",
+    ),
+    "Gated privacy page must restore the explanation",
+  );
   const gatedStatus = await request(
     first,
     "/api/export/status",
