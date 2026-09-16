@@ -1,22 +1,14 @@
-import { AppError, allProfiles, db, failure, userId } from "@/lib/db";
+import { AppError, allProfiles, failure, userId } from "@/lib/db";
 import { profilesCsv } from "@/lib/core";
+import { exportAccess } from "@/lib/export-access";
 export async function GET(req: Request) {
   try {
     const uid = await userId();
-    const testMode = process.env.EXPORT_TEST_MODE === "true";
-    if (!testMode) {
-      const { data, error } = await db()
-        .from("purchases")
-        .select("user_id")
-        .eq("user_id", uid)
-        .eq("status", "paid")
-        .maybeSingle();
-      if (error || !data)
-        throw new AppError(
-          "Downloads are paused until checkout is enabled.",
-          402,
-        );
-    }
+    if (!(await exportAccess(uid)).unlocked)
+      throw new AppError(
+        "This download requires one-time access. Checkout is not available yet.",
+        402,
+      );
     const now = new Date();
     return new Response(
       profilesCsv(await allProfiles(), new URL(req.url).origin),

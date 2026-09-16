@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import QRCode from "qrcode";
 import {
   ArrowLeft,
   ArrowUpRight,
@@ -21,7 +20,8 @@ export default function ProfilePage({ id }: { id: string }) {
     [own, setOwn] = useState(false),
     [loading, setLoading] = useState(true),
     [error, setError] = useState(""),
-    [qr, setQr] = useState(""),
+    [cardReady, setCardReady] = useState(false),
+    [cardError, setCardError] = useState(false),
     [url, setUrl] = useState(""),
     [copied, setCopied] = useState(false),
     [saved, setSaved] = useState(false);
@@ -50,21 +50,6 @@ export default function ProfilePage({ id }: { id: string }) {
       })
       .finally(() => {
         if (active) setLoading(false);
-      });
-    QRCode.toDataURL(`${window.location.origin}/p/${id}`, {
-      width: 360,
-      margin: 2,
-      errorCorrectionLevel: "M",
-      color: { dark: "#171713", light: "#ffffff" },
-    })
-      .then((q) => {
-        if (active) setQr(q);
-      })
-      .catch(() => {
-        if (active)
-          setError(
-            "Could not generate the QR. Share the profile link instead.",
-          );
       });
     return () => {
       active = false;
@@ -246,14 +231,24 @@ export default function ProfilePage({ id }: { id: string }) {
             <br />A new connection.
           </h2>
           <p>Show this at the zonals. Your whole profile is right here.</p>
-          <div className="qr-image">
-            {qr ? (
+          <div className="qr-image participant-card-preview">
+            {!cardError ? (
               <img
-                src={qr}
-                alt={`QR code linking to ${profile.name}'s Eureka 26 profile`}
+                src={`/api/profiles/${id}/card`}
+                alt={`Printable Eureka 26 participant card for ${profile.name}, with company, role, Eureka ID and profile QR`}
+                width={1200}
+                height={1500}
+                onLoad={() => setCardReady(true)}
+                onError={() => {
+                  setCardError(true);
+                  setCardReady(false);
+                }}
               />
             ) : (
-              <p>Generating QR…</p>
+              <p>
+                Could not load your card. Share the profile link below or
+                refresh to try again.
+              </p>
             )}
           </div>
           <strong>{profile.name}</strong>
@@ -262,16 +257,23 @@ export default function ProfilePage({ id }: { id: string }) {
             {copied ? <Check size={17} /> : <Share2 size={17} />}{" "}
             {copied ? "Link copied!" : "Share my profile"}
           </button>
-          {qr && (
-            <a className="button" href={qr} download={`eureka26-${id}-qr.png`}>
-              <Download size={17} /> Download QR
+          {cardReady && (
+            <a
+              className="button"
+              href={`/api/profiles/${id}/card?download=1`}
+              download={`eureka26-${id}-card.png`}
+            >
+              <Download size={17} /> Download QR card
             </a>
           )}
           <label className="qr-url">
             <span>Profile link</span>
             <input readOnly value={url} onFocus={(e) => e.target.select()} />
           </label>
-          <p className="fine">Recipients sign in to view contact details.</p>
+          <p className="fine">
+            4:5 printable card · PNG at 300 DPI. Recipients sign in to view
+            contact details.
+          </p>
           <span className="qr-star">✳</span>
         </aside>
       </div>

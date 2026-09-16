@@ -29,7 +29,7 @@ try {
   if (!service) throw new Error("Server key unavailable");
   await appendFile(
     ".env.local",
-    `\nNEXT_PUBLIC_SUPABASE_URL=https://pmpekvgfhlixpivwfyfs.supabase.co\nSUPABASE_SERVICE_ROLE_KEY=${service}\nEXPORT_TEST_MODE=true\n`,
+    `\nNEXT_PUBLIC_SUPABASE_URL=https://pmpekvgfhlixpivwfyfs.supabase.co\nSUPABASE_SERVICE_ROLE_KEY=${service}\nDOWNLOAD_PAYMENT_GATE_ENABLED=false\n`,
   );
   console.log(
     "Supabase server configuration saved locally. No key values displayed.",

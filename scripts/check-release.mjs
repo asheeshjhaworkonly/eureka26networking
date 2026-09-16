@@ -33,6 +33,24 @@ assert.equal(
 );
 const bundles = await files(".next/static");
 assert.ok(bundles.length > 0);
+const cardTrace = JSON.parse(
+  await readFile(
+    ".next/server/app/api/profiles/[id]/card/route.js.nft.json",
+    "utf8",
+  ),
+);
+for (const name of [
+  "space-grotesk-latin-400-normal.woff",
+  "space-grotesk-latin-700-normal.woff",
+  "space-grotesk-latin-ext-400-normal.woff",
+  "space-grotesk-latin-ext-700-normal.woff",
+  "noto-sans-devanagari-devanagari-400-normal.woff",
+  "noto-sans-devanagari-devanagari-700-normal.woff",
+])
+  assert.ok(
+    cardTrace.files.some((path) => path.endsWith("/assets/fonts/" + name)),
+    "Printable-card font must be included in the production function: " + name,
+  );
 for (const path of bundles)
   assert.equal(
     containsSecret(await readFile(path, "utf8"), secrets),
@@ -53,5 +71,5 @@ for (const path of tracked.filter((p) => p && !/^\.env/.test(p)))
     "A tracked repository file contains a server secret",
   );
 console.log(
-  `Release secret checks passed: ${bundles.length} browser bundles and tracked files; positive leak control passed; environment files excluded.`,
+  `Release secret checks passed: ${bundles.length} browser bundles and tracked files; positive leak control passed; environment files excluded; printable-card fonts traced.`,
 );

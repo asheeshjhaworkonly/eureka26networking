@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 const config: NextConfig = {
   poweredByHeader: false,
+  outputFileTracingIncludes: {
+    "/api/profiles/*/card": ["./assets/fonts/*.woff"],
+  },
   async headers() {
     return [
       {

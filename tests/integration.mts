@@ -2,7 +2,14 @@ import assert from "node:assert/strict";
 import { createClerkClient } from "@clerk/backend";
 import { createClient } from "@supabase/supabase-js";
 import { emptyProfile } from "../src/lib/core";
+import sharp from "sharp";
+import jsQR from "jsqr";
 const origin = process.env.QA_ORIGIN || "http://localhost:3000";
+const gateOrigin = process.env.QA_GATE_ORIGIN;
+assert.ok(
+  gateOrigin,
+  "Integration runner must supply a gated production server",
+);
 assert.ok(
   process.env.CLERK_SECRET_KEY?.startsWith("sk_test_"),
   "Use a Clerk development instance only",
@@ -32,13 +39,14 @@ async function request(
   session: string,
   path: string,
   options: RequestInit = {},
+  baseOrigin = origin,
 ) {
   const token = await clerk.sessions.getToken(session);
-  return fetch(origin + path, {
+  return fetch(baseOrigin + path, {
     ...options,
     headers: {
       Authorization: `Bearer ${token.jwt}`,
-      Origin: origin,
+      Origin: baseOrigin,
       ...options.headers,
     },
     redirect: "manual",
@@ -155,8 +163,81 @@ try {
   const contact = await request(second, `/api/profiles/${id}/contact`);
   assert.equal(contact.status, 200);
   assert.ok((await contact.text()).includes("TEL;TYPE=CELL:+919000000000"));
+  const cardPath = `/api/profiles/${id}/card?download=1`;
+  assert.equal((await fetch(origin + cardPath)).status, 401);
+  const card = await request(second, cardPath);
+  assert.equal(card.status, 200);
+  assert.match(
+    card.headers.get("content-disposition")!,
+    /attachment;.*-card\.png/,
+  );
+  assert.equal(card.headers.get("cache-control"), "private, no-store");
+  const png = Buffer.from(await card.arrayBuffer());
+  const metadata = await sharp(png).metadata();
+  assert.equal(metadata.width, 1200);
+  assert.equal(metadata.height, 1500);
+  assert.equal(metadata.density, 300);
+  const raw = await sharp(png)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  assert.equal(
+    jsQR(new Uint8ClampedArray(raw.data), raw.info.width, raw.info.height)
+      ?.data,
+    `${origin}/p/${id}`,
+  );
   const status = await json(first, "/api/export/status");
-  assert.deepEqual(status.body, { testMode: true, unlocked: true });
+  assert.deepEqual(status.body, { paymentGateEnabled: false, unlocked: true });
+  assert.ok(!(await (await request(first, "/privacy")).text()).includes("₹9"), "Free-mode privacy page must hide the fee");
+  assert.ok((await (await request(first, "/privacy", {}, gateOrigin)).text()).includes("₹9"), "Gated privacy page must restore the explanation");
+  const gatedStatus = await request(
+    first,
+    "/api/export/status",
+    {},
+    gateOrigin,
+  );
+  assert.deepEqual(await gatedStatus.json(), {
+    paymentGateEnabled: true,
+    unlocked: false,
+  });
+  assert.equal(
+    (await request(first, "/api/export", {}, gateOrigin)).status,
+    402,
+  );
+  assert.ifError(
+    (
+      await supabase
+        .from("purchases")
+        .insert({ user_id: users[0], status: "pending" })
+    ).error,
+  );
+  assert.equal(
+    (await request(first, "/api/export", {}, gateOrigin)).status,
+    402,
+    "A pending purchase must not grant access",
+  );
+  assert.ifError(
+    (
+      await supabase
+        .from("purchases")
+        .update({ status: "paid" })
+        .eq("user_id", users[0])
+    ).error,
+  );
+  assert.deepEqual(
+    await (await request(first, "/api/export/status", {}, gateOrigin)).json(),
+    { paymentGateEnabled: true, unlocked: true },
+  );
+  assert.equal(
+    (await request(first, "/api/export", {}, gateOrigin)).status,
+    200,
+    "Existing paid entitlement allows later snapshots",
+  );
+  assert.equal(
+    (await request(second, "/api/export", {}, gateOrigin)).status,
+    402,
+    "Another account cannot use this entitlement",
+  );
   const oldExport = await request(first, "/api/export");
   assert.equal(oldExport.status, 200);
   assert.equal(oldExport.headers.get("cache-control"), "private, no-store");
@@ -188,10 +269,11 @@ try {
     .list(users[0]);
   assert.equal(photos?.length, 0);
   console.log(
-    "Live integration passed: validation, persistence, shared IDs, ownership, origin checks, private photos, contacts, fresh safe CSV, stable links, and removal.",
+    "Live integration passed: free/gated downloads, pending/paid entitlements, private printable card and decoded QR, validation, persistence, shared IDs, ownership, origin checks, private photos, contacts, fresh safe CSV, stable links, and removal.",
   );
 } finally {
   for (const uid of users) {
+    await supabase.from("purchases").delete().eq("user_id", uid);
     await supabase.storage.from("founder-photos").remove([`${uid}/profile`]);
     await supabase.from("profiles").delete().eq("owner_id", uid);
     const user = await clerk.users.getUser(uid);

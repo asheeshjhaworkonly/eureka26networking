@@ -10,7 +10,13 @@
   --line: 2px solid var(--ink);
   --shadow: 5px 5px 0 var(--ink);
 }
-.auth-page { display:flex; min-height:65vh; padding:60px 18px; align-items:center; justify-content:center; }
+.auth-page {
+  display: flex;
+  min-height: 65vh;
+  padding: 60px 18px;
+  align-items: center;
+  justify-content: center;
+}
 * {
   box-sizing: border-box;
 }
@@ -1471,6 +1477,14 @@ textarea:focus-visible {
 .qr-image img {
   width: 100%;
   aspect-ratio: 1;
+}
+.participant-card-preview {
+  padding: 0;
+}
+.participant-card-preview img {
+  display: block;
+  aspect-ratio: 4 / 5;
+  height: auto;
 }
 .qr-card > strong {
   font-size: 15px;

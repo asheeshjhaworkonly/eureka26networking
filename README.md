@@ -7,9 +7,9 @@ An unofficial, anonymous participant network for Eureka 2026 zonals. Next.js, Cl
 - Clerk authentication, with Google available through the linked Clerk app.
 - Participant-owned create/edit/delete profiles and optional private photo uploads (JPG, PNG, WebP; 3 MB maximum, keeping requests within [Vercel's function payload limit](https://vercel.com/docs/functions/limitations)).
 - All requested company, personal, qualification, centre, experience and social fields. Fifty-word company description limit enforced on the server.
-- Stable UUID profile URLs, downloadable QR codes, profile sharing, LinkedIn connections, and downloadable vCard contact files. Mobile devices can import a vCard into Contacts; browser behavior varies.
+- Stable UUID profile URLs, printable 4:5 participant QR cards (1200×1500 PNG, 300 DPI), profile sharing, LinkedIn connections, and downloadable vCard contact files. Cards show the holder's name, company, role, Eureka ID and zonal centre. Mobile devices can import a vCard into Contacts; browser behavior varies.
 - Authenticated directory, actual participant counts, full-profile search, combined filters, sorting and refresh.
-- Separate download explanation page. Server-controlled free testing mode. Fresh Excel-compatible CSV snapshots on each download, including formula-injection protection.
+- Separate download page in both modes. A server-controlled payment gate hides every fee/payment reference when off and restores the explanation and entitlement restriction when on. Fresh Excel-compatible CSV snapshots on each download, including formula-injection protection.
 - Consent, withdrawal, and community rules. Self-reported qualification; no official verification or endorsement.
 - A locked purchases table for the later one-time ₹9 account entitlement. No payment collection exists in this phase.
 
@@ -26,13 +26,13 @@ Open http://localhost:3000. Local credentials live in `.env.local` (Clerk) and `
 
 Required application configuration:
 
-| Variable | Purpose |
-| --- | --- |
-| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk frontend key |
-| `CLERK_SECRET_KEY` | Clerk server key; never public |
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase server key; never public |
-| `EXPORT_TEST_MODE` | Exactly `true` enables free testing downloads |
+| Variable                            | Purpose                                                                                                                                             |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk frontend key                                                                                                                                  |
+| `CLERK_SECRET_KEY`                  | Clerk server key; never public                                                                                                                      |
+| `NEXT_PUBLIC_SUPABASE_URL`          | Supabase project URL                                                                                                                                |
+| `SUPABASE_SERVICE_ROLE_KEY`         | Supabase server key; never public                                                                                                                   |
+| `DOWNLOAD_PAYMENT_GATE_ENABLED`     | `false` (default) permits signed-in downloads with no payment wording. Exactly `true` restores the fee explanation and requires a paid entitlement. |
 
 Set Clerk route variables shown in `.env.example`. `clerk env pull` can retrieve the linked Clerk app's keys without displaying them. Clerk development app: `app_3JPLbExoWR9gaWeuPzPQKcXIHDs`.
 
@@ -61,7 +61,7 @@ Alternatively, run `supabase/migrations/202609160001_directory.sql` in the proje
 2. Complete the four form steps, choose a photo if desired, and accept profile-sharing consent.
 3. Publish. Confirm the profile appears in the directory and its details and photo are correct.
 4. Search for text in an email, company, city, or social link; combine several filters and clear them.
-5. Download the QR, scan it on a second device, and sign in to view the shared profile.
+5. Download the QR card, print it at 4×5 inches (or any 4:5 size), scan it on a second device, and sign in to view the shared profile. Generate the card on the final deployed domain before distributing printed copies.
 6. Test LinkedIn, email, website, social links, and Save contact.
 7. Open Download full sheet, read the explanation, accept the directory-use pledge, and download the free CSV.
 8. Edit a profile and download again. The new CSV should change; the old file stays the same. Your profile URL and QR stay the same.
@@ -71,21 +71,33 @@ Alternatively, run `supabase/migrations/202609160001_directory.sql` in the proje
 npm test
 npm run lint
 npm run build
+npm run test:integration
 ```
 
 See `GATES.md` and `QA-EVIDENCE.md` for the current verification status and access limitations.
 
 ## Your first Vercel deployment
 
-1. Import `asheeshjhaworkonly/eureka26networking` into Vercel and select your preferred `*.vercel.app` project name.
-2. Framework: Next.js. Use the default install and build settings. Set the required application environment variables above, plus Clerk route values from `.env.example`. Keep `EXPORT_TEST_MODE=true` during your review.
+1. Import `asheeshjhaworkonly/eureka26networking` into Vercel and select your preferred `*.vercel.app` project name. Choose `master` as the production branch for these changes.
+2. Framework: Next.js. Use the default install and build settings. Set the required application environment variables above, plus Clerk route values from `.env.example`. Keep `DOWNLOAD_PAYMENT_GATE_ENABLED=false` while downloads are open.
 3. Use the correct Clerk instance keys for the environment. The linked application currently has development keys; a production Clerk instance and its domain/OAuth configuration must be completed before a public launch.
 4. In Clerk, enable Google and configure the deployed origin and redirect URLs. For production, complete Clerk's production-domain and Google OAuth setup using the final domain you choose. No Vercel deployment is performed by this task.
 5. Deploy, then repeat the actual user journey on the chosen URL. Profile QR codes use the current site's origin; download new QR images after moving to a different domain.
 
 ## Later Razorpay phase
 
-After the free flows are accepted: add server-created ₹9 orders, signed payment verification, signed/idempotent captured-payment webhooks, and the one-per-Clerk-user paid entitlement. Never unlock a download from a client-side “success” event alone. A paid account can then fetch fresh CSV snapshots without paying again. `EXPORT_TEST_MODE=false` closes free access; unpaid downloads stay disabled until checkout is implemented. No checkout button or simulated payment is included now.
+After the free flows are accepted: add server-created ₹9 orders, signed payment verification, signed/idempotent captured-payment webhooks, and the one-per-Clerk-user paid entitlement. Never unlock a download from a client-side “success” event alone. A paid account can then fetch fresh CSV snapshots without paying again. No checkout button or simulated payment is included now.
+
+## Turn the download gate on or off
+
+In Vercel → Project Settings → Environment Variables, set `DOWNLOAD_PAYMENT_GATE_ENABLED` for the desired environment, save, and redeploy:
+
+- `false`: signed-in members can download. The separate download page and networking pledge remain; all fee, payment, checkout and testing banners are hidden, including payment references on the privacy page.
+- `true`: the ₹9 explanation and checkout-availability notice return. The server rejects downloads for accounts without a paid entitlement; paid accounts can download newer snapshots without paying again. Profile browsing and printable QR cards remain available to signed-in members.
+
+The setting is server-only. Missing values default to off. It replaces `EXPORT_TEST_MODE`, which is no longer used; remove the old variable from Vercel. Turning the gate on does not connect Razorpay: until that integration is added, unpaid accounts see the availability notice and cannot download.
+
+`npm run test:integration` starts temporary production servers in both modes after a build, verifies unpaid/pending/paid access and private card generation, then removes its disposable development fixtures and stops those servers.
 
 ## Boundaries
 

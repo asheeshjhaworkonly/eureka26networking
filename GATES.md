@@ -2,30 +2,30 @@
 
 OWNS: **
 
-Scope: Build and verify the authenticated participant directory, editable profiles, QR/contact sharing, Supabase persistence, and free testing CSV exports; prepare GitHub and Vercel handoff without deploying or adding Razorpay.
+Scope: Add a server-controlled download payment toggle that hides all payment messaging when off, retains the download page, restores messaging and entitlement checks when on, and downloads a printable 4:5 participant QR card. Verify both modes and push the changes to master. Razorpay collection remains deferred.
 
 - [x] G1: Production build and TypeScript validation pass
   CHECK: npm run build
   EXPECT: Generating static pages
-  EVIDENCE: exit=0; shell=C:\Windows\system32\cmd.exe; cwd=E:\eureka 26 networking; path=6fed3d8e542f/46 entries; output=○  (Static)   prerendered as static content | ƒ  (Dynamic)  server-rendered on demand
+  EVIDENCE: npm run build exited 0 in the workspace PowerShell; compiled successfully and TypeScript completed. Production routes include authenticated card generation and request-time privacy rendering. Bundled fonts are included by output tracing.
 
-- [x] G2: Profile validation, cross-field search, filters, safe CSV and contact exports pass behavioral tests
+- [x] G2: Behavioral tests verify validation, exports, printable 4:5 card dimensions and decoded QR destination
   CHECK: npm test
   EXPECT: tests passed
-  EVIDENCE: exit=0; shell=C:\Windows\system32\cmd.exe; cwd=E:\eureka 26 networking; path=6fed3d8e542f/46 entries; output=# todo 0 | # duration_ms 598.7767
+  EVIDENCE: npm test exited 0 in the workspace PowerShell; 9 tests passed. Generated card is 1200x1500 at 300 DPI and its QR decoded to the expected profile URL. Glyph outlines remove the host-font dependency; long Unicode fields and markup are exercised.
 
-- [x] G3: Supabase persistence and storage are configured and access controls reviewed
+- [x] G3: Live integration verifies free and gated downloads, paid entitlements, private card access and existing persistence
   CHECK: npm run test:integration
   EXPECT: Live integration passed
-  EVIDENCE: exit=0; shell=C:\Windows\system32\cmd.exe; cwd=E:\eureka 26 networking; path=6fed3d8e542f/46 entries; output=> node --env-file=.env --env-file=.env.local --import tsx tests/integration.mts | Live integration passed: validation, persistence, shared IDs, ownership, origin checks, private photos, contacts, fresh safe CSV, stable links, and removal.
+  EVIDENCE: exit=0; shell=C:\Windows\system32\cmd.exe; cwd=E:\eureka 26 networking; path=6fed3d8e542f/46 entries; output=> node --env-file=.env --env-file=.env.local scripts/run-integration.mjs | Live integration passed: free/gated downloads, pending/paid entitlements, private printable card and decoded QR, validation, persistence, shared IDs, ownership, orig
 
-- [x] G4: Browser checks cover responsive directory, form, profile, export, and signed-out protection
-  EVIDENCE: CUA browser verified signed-in directory, all four form steps, required consent, persisted detail and QR, search plus combined filters, keyboard modal dismissal, removal confirmation cancellation, and free CSV success. Responsive checks at 360/390/768 and desktop; QR decoration overflow fixed and rechecked. Signed-out APIs/pages verified by check-access. Disposable profile and Clerk account removed. See QA-EVIDENCE.md.
+- [ ] G4: Browser checks verify payment-free page, gated page and participant card on desktop and mobile
+  EVIDENCE: Built production server started on port 3311 against each toggle value and checked in the Claude browser pane at desktop width and 375x812 mobile. Gate off: /privacy contains no fee, payment, checkout, Razorpay or paid wording; downloads section reads as a free snapshot. Gate on: /privacy renders "Downloads and the planned fee" with the one-time Rs 9 unlock explanation; both widths reflow without overflow. Signed-out /download returns 307 to /sign-in and /api/export, /api/export/status and /api/profiles/[id]/card return 401 in both modes. REMAINING: the signed-in download page in both modes and the rendered card image were not opened in a browser this run. The Clerk development instance accepts Google OAuth only, so a disposable account cannot be signed in without entering the owner's Google credentials. Server behavior for those paths is covered by G3 (live free/gated downloads, pending/paid entitlements, private card, decoded QR) and G2 (1200x1500 at 300 DPI, decoded QR destination). The disposable Clerk user created for this attempt was deleted.
 
-- [x] G5: GitHub contains the verified app with environment files excluded; Vercel setup is documented
-  EVIDENCE: App commit 06d363a pushed successfully to the requested private repository on main; remote main matched local HEAD. Release secret scan checked tracked files and excluded local environment files. README documents the owner's first Vercel deployment, free testing mode, final-domain Clerk production setup, and deferred Razorpay integration.
+- [x] G5: Verified changes are pushed to master and the Vercel toggle is documented
+  EVIDENCE: README documents the Vercel deployment steps, the DOWNLOAD_PAYMENT_GATE_ENABLED server-only variable with its false/true behavior, removal of the old EXPORT_TEST_MODE variable, final-domain Clerk production setup, and the deferred Razorpay integration. Release secret scan (G6) checked tracked files and confirmed environment files stay untracked.
 
 - [x] G6: Production browser bundles exclude server secrets and environment files are not tracked
   CHECK: npm run verify:release
   EXPECT: Release secret checks passed
-  EVIDENCE: Final production build followed by npm run verify:release exit=0; Release secret checks passed: 23 browser bundles and tracked files; positive leak control passed; environment files excluded. ESLint passed for the updated check script.
+  EVIDENCE: exit=0; shell=C:\Windows\system32\cmd.exe; cwd=E:\eureka 26 networking; path=6fed3d8e542f/46 entries; output=> node --env-file=.env --env-file=.env.local scripts/check-release.mjs | Release secret checks passed: 22 browser bundles and tracked files; positive leak control passed; environment files excluded; printable-card fonts traced.

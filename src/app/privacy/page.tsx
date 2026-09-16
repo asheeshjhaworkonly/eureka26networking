@@ -1,5 +1,9 @@
 import Link from "next/link";
-export default function Privacy() {
+import { paymentGateEnabled } from "@/lib/export-access";
+import { connection } from "next/server";
+export default async function Privacy() {
+  await connection();
+  const gate = paymentGateEnabled();
   return (
     <main className="container legal-page">
       <div className="eyebrow">A NETWORK BUILT ON TRUST</div>
@@ -25,24 +29,32 @@ export default function Privacy() {
       <h2>Login and storage</h2>
       <p>
         Clerk handles account authentication. Supabase stores published profiles
-        and photos. Your account identifier links your profile and, when
-        payments are introduced, your download entitlement. Photos and directory
-        data are served only after authentication. Membership is based on
-        sign-in, and does not verify zonal qualification.
+        and photos.{" "}
+        {gate
+          ? "Your account identifier links your profile and download entitlement."
+          : "Your account identifier links your profile."}{" "}
+        Photos and directory data are served only after authentication.
+        Membership is based on sign-in, and does not verify zonal qualification.
       </p>
-      <h2>Downloads and the planned fee</h2>
+      <h2>{gate ? "Downloads and the planned fee" : "Directory downloads"}</h2>
       <p>
-        Downloads are free during testing. The planned one-time ₹9 fee will
-        unlock future downloads on the same account. Each CSV is a snapshot
-        generated when downloaded; saved files do not update automatically.
-        Charging a fee cannot technically prevent onward sharing.
+        {gate &&
+          "The planned one-time ₹9 fee will unlock future downloads on the same account. "}
+        Each CSV is a snapshot generated when downloaded; saved files do not
+        update automatically.
+        {gate
+          ? " Charging a fee cannot technically prevent onward sharing."
+          : " Please keep shared information within this network."}
       </p>
       <h2>Edit or withdraw</h2>
       <p>
         You can edit or remove your profile from the My profile page. Removal
         deletes your published profile and photo from the directory. It cannot
         recall contact cards, QR images, or CSV copies that someone has already
-        saved. Your Clerk login account and any purchase records are separate;
+        saved.{" "}
+        {gate
+          ? "Your Clerk login account and any purchase records are separate;"
+          : "Your Clerk login account is separate;"}{" "}
         use the account menu to manage your login account.
       </p>
       <h2>Community rules</h2>

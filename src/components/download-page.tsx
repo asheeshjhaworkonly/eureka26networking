@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 export default function DownloadPage() {
   const [status, setStatus] = useState<{
-      testMode: boolean;
+      paymentGateEnabled: boolean;
       unlocked: boolean;
     } | null>(null),
     [error, setError] = useState(""),
@@ -101,20 +101,22 @@ export default function DownloadPage() {
               </div>
             ))}
           </div>
-          <div className="why-card">
-            <h2>Why a one-time ₹9?</h2>
-            <p>
-              Participants put effort into reaching the zonals and choosing to
-              share their information. The planned ₹9 fee is a small commitment
-              to handle that shared directory responsibly, and helps cover the
-              cost of building and running this tool.
-            </p>
-            <p>
-              A fee cannot prevent leaks. Respecting the people in the sheet is
-              what matters. Once paid, your account will be able to download
-              newer snapshots without paying again.
-            </p>
-          </div>
+          {status?.paymentGateEnabled && (
+            <div className="why-card">
+              <h2>Why a one-time ₹9?</h2>
+              <p>
+                Participants put effort into reaching the zonals and choosing to
+                share their information. The planned ₹9 fee is a small
+                commitment to handle that shared directory responsibly, and
+                helps cover the cost of building and running this tool.
+              </p>
+              <p>
+                A fee cannot prevent leaks. Respecting the people in the sheet
+                is what matters. Once paid, your account will be able to
+                download newer snapshots without paying again.
+              </p>
+            </div>
+          )}
         </section>
         <aside className="export-card yellow">
           <span className="export-card-icon">
@@ -138,26 +140,23 @@ export default function DownloadPage() {
             <span>Updated</span>
             <strong>At download time</strong>
           </div>
-          {status?.testMode ? (
-            <div className="testing-banner">
-              <strong>FREE TESTING MODE</strong>
-              <p>
-                No payment needed while we test the app. The planned ₹9 checkout
-                will be added after testing.
-              </p>
-            </div>
-          ) : status?.unlocked ? (
-            <div className="testing-banner">
-              <Check size={17} /> Your account already has access.
-            </div>
-          ) : status ? (
-            <div className="testing-banner">
-              <strong>CHECKOUT COMING AFTER TESTING</strong>
-              <p>Downloads are paused until payments are enabled.</p>
-            </div>
-          ) : (
+          {status?.paymentGateEnabled ? (
+            status.unlocked ? (
+              <div className="testing-banner">
+                <Check size={17} /> Your account already has access.
+              </div>
+            ) : (
+              <div className="testing-banner">
+                <strong>ONE-TIME ACCESS · ₹9</strong>
+                <p>
+                  Checkout is not available yet. Downloads will open once
+                  payment is enabled.
+                </p>
+              </div>
+            )
+          ) : !status ? (
             <p aria-live="polite">Checking download access…</p>
-          )}
+          ) : null}
           <label className="consent export-pledge">
             <input
               type="checkbox"
