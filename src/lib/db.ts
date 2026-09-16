@@ -13,8 +13,9 @@ export class AppError extends Error {
   }
 }
 export async function userId() {
-  const { userId } = await auth();
-  if (!userId) throw new AppError("Sign in to continue.", 401);
+  const { isAuthenticated, userId } = await auth();
+  if (!isAuthenticated || !userId)
+    throw new AppError("Sign in to continue.", 401);
   return userId;
 }
 export function db() {

@@ -16,6 +16,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <ClerkProvider
+          dynamic
           appearance={{
             variables: {
               colorPrimary: "#171713",

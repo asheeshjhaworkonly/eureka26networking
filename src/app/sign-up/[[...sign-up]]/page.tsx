@@ -13,10 +13,10 @@ function firstParam(value: string | string[] | undefined) {
 }
 
 export default async function SignUpPage({ searchParams }: AuthPageProps) {
-  const { userId } = await auth();
+  const { isAuthenticated } = await auth();
   const params = await searchParams;
 
-  if (userId) {
+  if (isAuthenticated) {
     redirect(
       safeAuthRedirect(
         firstParam(params?.redirect_url) ??
