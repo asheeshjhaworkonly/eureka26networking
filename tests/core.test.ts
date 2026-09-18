@@ -68,10 +68,10 @@ test("valid profile accepted; consent, unsafe URLs, bad email, phone and 51 word
 });
 
 test("auth redirects keep same-origin destinations and reject external hosts", () => {
-  const origin = "https://eureka26network.vercel.app";
+  const origin = "https://example-deployment.vercel.app";
   assert.equal(
     safeAuthRedirect(
-      "https://eureka26network.vercel.app/profile/edit?step=1",
+      "https://example-deployment.vercel.app/profile/edit?step=1",
       "/directory",
       origin,
     ),
@@ -99,22 +99,22 @@ test("auth redirects accept only the origin the request arrived on", () => {
   // validated against the live origin instead of a compiled-in domain.
   assert.equal(
     safeAuthRedirect(
-      "https://eureka26network.vercel.app/directory",
+      "https://example-deployment.vercel.app/directory",
       "/directory",
-      "https://eureka26networking.vercel.app",
+      "https://other-deployment.vercel.app",
     ),
     "/directory",
   );
   assert.equal(
     safeAuthRedirect(
-      "https://eureka26networking.vercel.app/profile/edit",
+      "https://other-deployment.vercel.app/profile/edit",
       "/directory",
-      "https://eureka26networking.vercel.app",
+      "https://other-deployment.vercel.app",
     ),
     "/profile/edit",
   );
   assert.equal(
-    safeAuthRedirect("https://eureka26network.vercel.app/p/1", "/directory"),
+    safeAuthRedirect("https://example-deployment.vercel.app/p/1", "/directory"),
     "/directory",
   );
   assert.equal(safeAuthRedirect("/p/1", "/directory"), "/p/1");

@@ -1,5 +1,15 @@
 import { spawnSync } from "node:child_process";
 import { appendFile } from "node:fs/promises";
+
+// Get the project ref from environment or linked config
+const projectRef = process.env.SUPABASE_PROJECT_REF;
+if (!projectRef) {
+  console.error(
+    "Error: SUPABASE_PROJECT_REF environment variable is required.\nRun: npx supabase link --project-ref YOUR_PROJECT_REF",
+  );
+  process.exit(1);
+}
+
 const result = spawnSync(
   "npx.cmd",
   [
@@ -7,7 +17,7 @@ const result = spawnSync(
     "projects",
     "api-keys",
     "--project-ref",
-    "pmpekvgfhlixpivwfyfs",
+    projectRef,
     "--output",
     "json",
     "--agent",
@@ -29,7 +39,7 @@ try {
   if (!service) throw new Error("Server key unavailable");
   await appendFile(
     ".env.local",
-    `\nNEXT_PUBLIC_SUPABASE_URL=https://pmpekvgfhlixpivwfyfs.supabase.co\nSUPABASE_SERVICE_ROLE_KEY=${service}\nDOWNLOAD_PAYMENT_GATE_ENABLED=false\n`,
+    `\nNEXT_PUBLIC_SUPABASE_URL=https://${projectRef}.supabase.co\nSUPABASE_SERVICE_ROLE_KEY=${service}\nDOWNLOAD_PAYMENT_GATE_ENABLED=false\n`,
   );
   console.log(
     "Supabase server configuration saved locally. No key values displayed.",
